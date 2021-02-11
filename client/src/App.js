@@ -9,12 +9,14 @@ import { Container } from 'reactstrap';
 class App extends Component {
   render() {
     return (
-      <Container>
-        <div className="App">
-          <CustomNavbar />
+
+      <div className="App">
+        <CustomNavbar />
+        <Container>
           <Main />
-        </div>
-      </Container>
+        </Container>
+      </div>
+
 
     )
   }

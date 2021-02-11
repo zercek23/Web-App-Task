@@ -17,8 +17,8 @@ router.get('/', async (req, res) => {
 // @route   GET api/users
 // @desc    Get an user
 // @access  Public
-router.get('/:name', async (req, res) => {
-    await User.findOne({ name: req.params.name })
+router.get('/:id', async (req, res) => {
+    await User.findOne({ _id: req.params.id })
         .then(user => {
             if (user) {
                 res.json(user);
@@ -34,8 +34,8 @@ router.get('/:name', async (req, res) => {
 router.post('/', async (req, res) => {
     const newUser = new User({
         name: req.body.name,
-        email: req.body.email,
-        password: req.body.password
+        lastName: req.body.lastName,
+        email: req.body.email        
     })
 
     if (!newUser.name)
@@ -44,8 +44,8 @@ router.post('/', async (req, res) => {
     if (!newUser.email)
         return res.status(400).json({ msg: "Please include a email" })
 
-    if (!newUser.password)
-        return res.status(400).json({ msg: "Please include a password" })
+    if (!newUser.lastName)
+        return res.status(400).json({ msg: "Please include a last name" })
 
     await newUser.save()
         .then(user => res.json(user))
@@ -55,9 +55,9 @@ router.post('/', async (req, res) => {
 // @route   PUT api/users
 // @desc    Update an user
 // @access  Public
-router.put('/:name', async (req, res) => {
-    const filter = { name: req.params.name };
-    const update = { name: req.body.name, email: req.body.email, updateDate: Date.now() };
+router.put('/:id', async (req, res) => {
+    const filter = { _id: req.params.id };
+    const update = { name: req.body.name, lastName: req.body.lastName , email: req.body.email, updateDate: Date.now() };
 
     await User.findOneAndUpdate(filter, update, async (err) => {
         if (err) {
@@ -72,8 +72,8 @@ router.put('/:name', async (req, res) => {
 // @route   DELETE api/users
 // @desc    Delete an user
 // @access  Public
-router.delete('/:name', (req, res) => {
-    User.findOne({ name: req.params.name })
+router.delete('/:id', (req, res) => {
+    User.findOne({ _id: req.params.id })
         .then(user => user.remove().then(() => res.json({ msg: "User Deleted", success: true })))
         .catch(err => res.status(404).json({ success: false }));
 })

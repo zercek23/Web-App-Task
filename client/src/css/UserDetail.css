@@ -1,0 +1,9 @@
+.personColumn {
+    float: left;
+    width: 50%;
+}
+
+.projectsColumn {
+    float: right;
+    width: 50%;
+  }
