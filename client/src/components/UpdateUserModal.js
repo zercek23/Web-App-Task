@@ -4,7 +4,7 @@ import { Form, FormGroup, Label, Input } from 'reactstrap';
 import axios from 'axios';
 import '../css/Users.css';
 
-export default class AddUserModal extends Component {
+export default class UpdateUserModal extends Component {
     state = {
         modal: false
     }
@@ -13,31 +13,22 @@ export default class AddUserModal extends Component {
         this.setState({ modal: !this.state.modal })
     }
 
-    onSubmit = (e) => {
+    onSubmit = async (e) => {
         e.preventDefault();
 
         const newUser = {
             name: this.state.name,
             lastName: this.state.lastName,
             email: this.state.email
-        }        
-        
-        // // Adding to State in User Page
-        // this.props.setState(state => ({
-        //     users: state.users.filter(user => user._id !== this.props.id)
-        // }));
-
-        // this.props.setState(state => ({
-        //     users: [...state.users, newUser]
-        // }));
+        }
 
         // Put to Server
-        axios.put(`/api/users/${this.props.id}`, newUser);
+        await axios.put(`/api/users/${this.props.id}`, newUser).catch(err => console.log(err));
 
         // Get data again
-        axios.get('/api/users').then(obj => {
-            this.props.setState({users: obj.data})
-        })
+        await axios.get('/api/users').then(obj => {
+            this.props.setState({ users: obj.data })
+        }).catch(err => console.log(err));
 
         // Toggle
         this.toggle();

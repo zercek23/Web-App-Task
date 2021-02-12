@@ -10,14 +10,12 @@ const ProjectSchema = new Schema({
     },
     content: {
         type: String,
-        required: true,
+        required: true
     },
-    users: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: 'user'
-        }
-    ],
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: 'user'
+    },
     entryDate: {
         type: Date,
         default: Date.now

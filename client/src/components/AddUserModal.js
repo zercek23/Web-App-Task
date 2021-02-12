@@ -12,7 +12,7 @@ export default class AddUserModal extends Component {
         this.setState({ modal: !this.state.modal })
     }
 
-    onSubmit = (e) => {
+    onSubmit = async (e) => {
         e.preventDefault();
 
         const newUser = {
@@ -20,20 +20,14 @@ export default class AddUserModal extends Component {
             lastName: this.state.lastName,
             email: this.state.email
         }
-        console.log(newUser);
-
-        // // Adding to State in User Page
-        // this.props.setState(state => ({
-        //     users: [...state.users, newUser]
-        // }));
 
         // Post to Server
-        axios.post('/api/users', newUser);
+        await axios.post('/api/users', newUser).catch(err => console.log(err));
 
-        // Get data again
-        axios.get('/api/users').then(obj => {
-            this.props.setState({users: obj.data})
-        })
+        // Get data again and Update state
+        await axios.get('/api/users').then(obj => {
+            this.props.setState({ users: obj.data })
+        }).catch(err => console.log(err));
 
         // Toggle
         this.toggle();
@@ -46,7 +40,7 @@ export default class AddUserModal extends Component {
     render() {
         return (
             <div>
-                <Button color="dark" dark onClick={this.toggle}>Add User</Button>
+                <Button color="dark" onClick={this.toggle}>Add User</Button>
 
                 <Modal isOpen={this.state.modal} toggle={this.toggle} >
                     <ModalHeader toggle={this.toggle}>Add User</ModalHeader>

@@ -12,20 +12,20 @@ export default class Users extends Component {
         isLoaded: false
     }
 
-    componentDidMount() {
-        axios.get('/api/users').then((obj) => {
-            console.log(obj);
+    async componentDidMount() {
+        await axios.get('/api/users').then((obj) => {
             this.setState({ users: obj.data, isLoaded: !this.state.isLoaded });
-        })
+        }).catch(err => console.log(err));
     }
 
-    deleteUser = (id) => {
+    deleteUser = async (id) => {
+        // Delete in Server
+        await axios.delete(`/api/users/${id}`).catch(err => console.log(err));
+
         //Delete in State
         this.setState(state => ({
             users: state.users.filter(user => user._id !== id)
         }));
-        // Delete in Server
-        axios.delete(`/api/users/${id}`);
     }
 
     render() {
@@ -54,11 +54,11 @@ export default class Users extends Component {
                                             <Button className="customBtn" color="danger" onClick={() => this.deleteUser(user._id)}>X</Button>
                                         </td>
                                         <td>
-                                            <Button color="dark">
-                                                <Link to={'/users/' + user._id} style={{ color: 'white', textDecoration: 'none' }} >
+                                            <Link to={'/users/' + user._id} style={{ color: 'white', textDecoration: 'none' }} >
+                                                <Button color="dark">
                                                     Details
-                                                </Link>
-                                            </Button>
+                                                </Button>
+                                            </Link>
                                         </td>
                                     </tr>
                                 ))

@@ -11,11 +11,10 @@ class Main extends Component {
     users: []
   }
 
-  componentDidMount() {
-    axios.get('/api/users').then((obj) => {
-      console.log(obj);
+  async componentDidMount() {
+    await axios.get('/api/users').then((obj) => {
       this.setState({ users: obj.data });
-    })
+    }).catch(err => console.log(err));
   }
 
 
@@ -26,10 +25,10 @@ class Main extends Component {
         <Route exact path='/users' component={Users}></Route>
         {
           this.state.users.map((user) => (
-            <Route exact path={`/users/${user._id}`} component={() => <UserDetail id={user._id} />}></Route>
+            <Route key={user._id} exact path={`/users/${user._id}`} component={() => <UserDetail id={user._id} />}></Route>
           ))
         }
-        
+
       </Switch>
     )
   }

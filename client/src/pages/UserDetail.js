@@ -2,33 +2,40 @@ import React, { Component } from 'react'
 import axios from 'axios';
 import { Row, Col } from 'reactstrap';
 import {
-    Card, CardImg, CardText, CardBody,
-    CardTitle, CardSubtitle, Button
-  } from 'reactstrap';
+    Card, CardBody,
+    CardTitle, CardSubtitle,
+    ListGroup, ListGroupItem
+} from 'reactstrap';
 import '../css/UserDetail.css';
 
 export default class UserDetail extends Component {
     state = {
-        user: {}
+        user: {},
+        projects: []
     }
 
-    componentDidMount() {
-        axios.get(`/api/users/${this.props.id}`).then((obj) => {
+    async componentDidMount() {
+        // Get one user with id
+        await axios.get(`/api/users/${this.props.id}`).then((obj) => {
             this.setState({ user: obj.data });
-            console.log(this.state.user)
-        })
+        }).catch(err => console.log(err));
+
+        // Get projects
+        await axios.get('/api/projects').then((obj) => {
+            this.setState({ projects: obj.data });
+        }).catch(err => console.log(err));
     }
 
     render() {
-        const { projects, name, lastName, email } = this.state.user;
+        const { _id, name, lastName, email } = this.state.user;
         return (
             <div>
-                <Row style={{marginTop:'5%'}}>
+                <Row style={{ marginTop: '5%' }}>
                     <Col>
                         <Card>
-                            <CardBody>
-                                <Row style={{borderBottom:'1px solid black', marginBottom:'5%'}}>
-                                    <Col style={{textAlign: 'center'}} tag="h3">User Information</Col>
+                            <CardBody style={{ backgroundColor: '#bff9be' }}>
+                                <Row style={{ borderBottom: '1px solid black', marginBottom: '5%' }}>
+                                    <Col style={{ textAlign: 'center' }} tag="h3">User Information</Col>
                                 </Row>
                                 <Row>
                                     <Col>
@@ -53,12 +60,21 @@ export default class UserDetail extends Component {
                                     <Col>
                                         <CardTitle tag="h5">{email}</CardTitle>
                                     </Col>
-                                </Row>                        
+                                </Row>
                             </CardBody>
                         </Card>
                     </Col>
                     <Col>
-                        Projects
+                        <h3>Projects</h3>
+                        <ListGroup>
+                            {
+                                this.state.projects.map((project) => {
+                                    if (project.user === _id) {
+                                        return <ListGroupItem key={project._id}>{project.title}</ListGroupItem>
+                                    }
+                                })
+                            }
+                        </ListGroup>
                     </Col>
                 </Row>
 

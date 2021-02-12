@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
     const newUser = new User({
         name: req.body.name,
         lastName: req.body.lastName,
-        email: req.body.email        
+        email: req.body.email
     })
 
     if (!newUser.name)
@@ -56,17 +56,29 @@ router.post('/', async (req, res) => {
 // @desc    Update an user
 // @access  Public
 router.put('/:id', async (req, res) => {
-    const filter = { _id: req.params.id };
-    const update = { name: req.body.name, lastName: req.body.lastName , email: req.body.email, updateDate: Date.now() };
+    const { name, lastName, email } = req.body;
 
-    await User.findOneAndUpdate(filter, update, async (err) => {
-        if (err) {
-            res.status(400).json({ err });
-        } else {
-            const updatedUser = await User.findOne({ name: req.body.name });
-            res.status(200).json({ msg: "User Updated", updatedUser });
-        }
-    });
+    const filter = { _id: req.params.id };
+    const update = { name: req.body.name, lastName: req.body.lastName, email: req.body.email, updateDate: Date.now() };
+
+    if (update.name == null) {
+        res.status(400).json({ msg: "User name can't be empty" });
+    } else if (update.lastName == null) {
+        res.status(400).json({ msg: "User last name can't be empty" });
+    } else if (update.email == null) {
+        res.status(400).json({ msg: "E-mail can't be empty" });
+    }
+    else {
+        await User.findOneAndUpdate(filter, update, async (err) => {
+            if (err) {
+                res.status(400).json({ err });
+            } else {
+
+                const updatedUser = await User.findOne({ _id: req.params.id });
+                res.status(200).json({ msg: "User Updated", updatedUser });
+            }
+        });
+    }
 })
 
 // @route   DELETE api/users
