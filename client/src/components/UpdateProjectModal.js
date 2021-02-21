@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
-import { Form, FormGroup, Label, Input, Spinner } from 'reactstrap';
-import axios from 'axios';
+import { Form, FormGroup, Label, Input } from 'reactstrap';
 import '../css/Users.css';
 
-export default class UpdateProjectModal extends Component {
+import { connect } from 'react-redux';
+import { updateProject } from '../actions/projectActions';
+import { getUsers } from '../actions/userActions';
+import PropTypes from 'prop-types';
+
+class UpdateProjectModal extends Component {
     state = {
         modal: false,
-        getUsers: [],
         user: '',
-        isUsersLoaded: false
     }
 
-    async componentDidMount() {
+    componentDidMount() {
         // Get Users
-        await axios.get('/api/users').then((obj) => {
-            this.setState({ getUsers: obj.data, isUsersLoaded: !this.state.isUsersLoaded });
-        }).catch(err => console.log(err));
+        this.props.getUsers();
     }
 
     toggle = () => {
@@ -32,13 +32,7 @@ export default class UpdateProjectModal extends Component {
             user: this.state.user
         }
 
-        // Put to Server
-        await axios.put(`/api/projects/${this.props.id}`, newProject).catch(err => console.log(err));
-
-        // Get data again and Update State
-        await axios.get('/api/projects').then(obj => {
-            this.props.setState({ projects: obj.data })
-        }).catch(err => console.log(err));
+        this.props.updateProject(this.props.id, newProject);
 
         // Toggle
         this.toggle();
@@ -46,7 +40,7 @@ export default class UpdateProjectModal extends Component {
 
     onChange = (e) => {
         if (e.target.name === "user") {
-            const selectedIndex = e.target.options.selectedIndex;            
+            const selectedIndex = e.target.options.selectedIndex;
             this.setState({ [e.target.name]: e.target.options[selectedIndex].getAttribute('data-key') });
         }
         else {
@@ -55,6 +49,7 @@ export default class UpdateProjectModal extends Component {
     }
 
     render() {
+        const { users } = this.props.user;
         return (
             <div>
                 <Button className="customBtn" color="warning" style={{ marginLeft: 10 }} onClick={this.toggle}>+</Button>
@@ -72,20 +67,17 @@ export default class UpdateProjectModal extends Component {
                                 <Input type="textarea" name="content" id="exampleContent" placeholder="Enter Content" onChange={this.onChange} />
                             </FormGroup>
                             {
-                                !this.state.isUsersLoaded ? (<Spinner color="primary" />) :
-                                    (
-                                        <FormGroup>
-                                            <Label for="exampleSelectMulti">Select Users</Label>
-                                            <Input type="select" name="user" id="exampleSelectMulti" onChange={this.onChange}>
-                                                <option key="0"></option>
-                                                {
-                                                    this.state.getUsers.map((user) => (
-                                                        <option key={user._id} data-key={user._id}>{`${user.name} ${user.lastName}`}</option>
-                                                    ))
-                                                }
-                                            </Input>
-                                        </FormGroup>
-                                    )
+                                <FormGroup>
+                                    <Label for="exampleSelectMulti">Select Users</Label>
+                                    <Input type="select" name="user" id="exampleSelectMulti" onChange={this.onChange}>
+                                        <option key="0"></option>
+                                        {
+                                            users.map((user) => (
+                                                <option key={user._id} data-key={user._id}>{`${user.name} ${user.lastName}`}</option>
+                                            ))
+                                        }
+                                    </Input>
+                                </FormGroup>
                             }
                             <Button color="primary" onClick={this.onSubmit}>Submit</Button>
                         </Form>
@@ -96,3 +88,17 @@ export default class UpdateProjectModal extends Component {
         )
     }
 }
+
+UpdateProjectModal.propTypes = {
+    getUsers: PropTypes.func.isRequired,
+    updateProject: PropTypes.func.isRequired,
+    project: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+    user: state.user,
+    project: state.project
+});
+
+export default connect(mapStateToProps, { updateProject, getUsers })(UpdateProjectModal);

@@ -8,17 +8,17 @@ import {
 } from 'reactstrap';
 import '../css/UserDetail.css';
 
-export default class UserDetail extends Component {
+import { connect } from 'react-redux';
+import { getUser } from '../actions/userActions';
+import PropTypes from 'prop-types';
+
+class UserDetail extends Component {
     state = {
-        user: {},
         projects: []
     }
 
     async componentDidMount() {
-        // Get one user with id
-        await axios.get(`/api/users/${this.props.id}`).then((obj) => {
-            this.setState({ user: obj.data });
-        }).catch(err => console.log(err));
+        this.props.getUser(this.props.id);
 
         // Get projects
         await axios.get('/api/projects').then((obj) => {
@@ -27,7 +27,7 @@ export default class UserDetail extends Component {
     }
 
     render() {
-        const { _id, name, lastName, email } = this.state.user;
+        const { _id, name, lastName, email } = this.props.user.user;
         return (
             <div>
                 <Row style={{ marginTop: '5%' }}>
@@ -82,3 +82,14 @@ export default class UserDetail extends Component {
         )
     }
 }
+
+UserDetail.propTypes = {
+    getUser: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+    user: state.user
+});
+
+export default connect(mapStateToProps, { getUser })(UserDetail);

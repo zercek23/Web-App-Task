@@ -6,6 +6,10 @@ import Projects from '../pages/Projects';
 import UserDetail from '../pages/UserDetail';
 import Users from '../pages/Users';
 
+import { connect } from 'react-redux';
+import { getUsers } from '../actions/userActions';
+import PropTypes from 'prop-types';
+
 class Main extends Component {
   state = {
     users: []
@@ -17,7 +21,6 @@ class Main extends Component {
     }).catch(err => console.log(err));
   }
 
-
   render() {
     return (
       <Switch>
@@ -28,7 +31,6 @@ class Main extends Component {
             <Route key={user._id} exact path={`/users/${user._id}`} component={() => <UserDetail id={user._id} />}></Route>
           ))
         }
-
       </Switch>
     )
   }

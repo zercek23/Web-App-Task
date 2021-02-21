@@ -6,18 +6,20 @@ import Main from './components/Main';
 import CustomNavbar from './components/CustomNavbar';
 import { Container } from 'reactstrap';
 
+import { Provider } from 'react-redux';
+import store from './store';
+
 class App extends Component {
   render() {
     return (
-
-      <div className="App">
-        <CustomNavbar />
-        <Container>
-          <Main />
-        </Container>
-      </div>
-
-
+      <Provider store={store}>
+        <div className="App">
+          <CustomNavbar />
+          <Container>
+            <Main />
+          </Container>
+        </div>
+      </Provider>
     )
   }
 }

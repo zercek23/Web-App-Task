@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { Form, FormGroup, Label, Input } from 'reactstrap';
-import axios from 'axios';
 
-export default class AddUserModal extends Component {
+import { connect } from 'react-redux';
+import { addUser } from '../actions/userActions';
+import PropTypes from 'prop-types';
+
+class AddUserModal extends Component {
     state = {
         modal: false
     }
@@ -22,14 +25,10 @@ export default class AddUserModal extends Component {
         }
 
         // Post to Server
-        await axios.post('/api/users', newUser).catch(err => console.log(err));
+        this.props.addUser(newUser);
+        // await axios.post('/api/users', newUser).catch(err => console.log(err));
 
-        // Get data again and Update state
-        await axios.get('/api/users').then(obj => {
-            this.props.setState({ users: obj.data })
-        }).catch(err => console.log(err));
-
-        // Toggle
+        // Close Modal
         this.toggle();
     }
 
@@ -67,3 +66,14 @@ export default class AddUserModal extends Component {
         )
     }
 }
+
+AddUserModal.propTypes = {
+    addUser: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired
+}
+
+const mapStateToProps = (state) => ({
+    user: state.user
+});
+
+export default connect(mapStateToProps, { addUser })(AddUserModal);
